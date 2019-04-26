@@ -62,12 +62,32 @@ print('-' * 50)
 # Разумеется, внутри нельзя использовать саму функцию filter.
 
 
+def my_func(x):  #Тестовая функция
+    if x >= 0:
+        return True
+    else:
+        return False
+
+
 def my_filter(func, sequence):
-    print(func)
-    print(sequence)
+    check = type(sequence)
+    if func and (check is list or check is tuple or check is str):
+        storage = []
+        for item in sequence:
+            result = func(item)
+            if result:
+                storage.append(item)
+            else:
+                continue
+        return storage
 
 
-my_filter("Here it is", (1, 2, 3))
+seq = (1, 2, -3, 57, 98, 6, 14, 73, 0, -12)
+print("До фильтра: {:>44}".format(str(seq)))
+new_seq = my_filter(my_func, seq)
+print("После фильтра: {:>41}".format(str(new_seq)))
+new_seq_sorted = sort_to_max(new_seq)
+print("После фильтра и сортировки: {:>1}".format(str(new_seq_sorted)))
 print('-' * 50)
 # Задача-4:
 # Даны четыре точки А1(х1, у1), А2(x2 ,у2), А3(x3 , у3), А4(х4, у4).
