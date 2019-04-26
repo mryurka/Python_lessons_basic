@@ -26,7 +26,7 @@ def my_round(number, ndigits):
 print(my_round(2.1234567, 5))
 print(my_round(2.1999967, 4))
 print(my_round(2.9999967, 5))
-print(my_round(2.1253457, 7))  # Ошибка
+print(my_round(2.1253457, 8))  # Ошибка
 print(my_round(2.1234543, 5))
 print(my_round(2.1234312, 4))
 print("-"*50)
