@@ -34,7 +34,7 @@ date = '01.11.1985'
 date1 = '01.22.1001'
 date2 = '1.12.1001'
 date3 = '-2.10.3001'
-date4 = '45.13.81'
+date4 = '45.13.81855'
 
 date_list_str = date4.split('.')
 
@@ -132,7 +132,7 @@ else:
                     room += 1
                     # print("Room", room)
                     if room == target:
-                        print(f"Этаж: {doors_left}, Комната {level}-я слева")
+                        print(f"Этаж: {floor}, Комната {doors_left}-я слева")
                         stop = True
                         break
             else:
