@@ -1,4 +1,5 @@
-
+__author__ = 'Айвазовский Юрий Валентинович'
+import math
 # Задание-1: уравнение прямой вида y = kx + b задано в виде строки.
 # Определить координату y точки с заданной координатой x.
 # equation = 'y = -12x + 11111140.2121'
@@ -30,10 +31,53 @@ print("-" * 50)
 date = '01.11.1985'
 
 # Примеры некорректных дат
-date = '01.22.1001'
-date = '1.12.1001'
-date = '-2.10.3001'
+date1 = '01.22.1001'
+date2 = '1.12.1001'
+date3 = '-2.10.3001'
+date4 = '45.13.81'
 
+date_list_str = date4.split('.')
+
+month = {"01": 31, "02": 28, "03": 31, "04": 30, "05": 31, "06": 30,
+         "07": 31, "08": 31, "09": 30, "10": 31, "11": 30, "12": 31}
+
+date_list_int = []
+for item in date_list_str:
+    num = int(item)  # сделали числом
+    date_list_int.append(int(math.fabs(num)))  # очистили знак
+# ------------------------------------month---------------------------------------------------------
+if date_list_int[1] <= 12:
+    if date_list_int[1] > 9:
+        ready_month = str(date_list_int[1])
+    else:  # добавим 0 в к началу для красоты
+        ready_month = "0" + str(date_list_int[1])
+else:
+    ready_month = 'err'
+    print('Не верно введён месяц, он должен быть целвм числом от 1 до 12 в формате даты: дд.мм.гггг')
+# ------------------------------------day---------------------------------------------------------
+if ready_month != 'err':
+    if date_list_int[0] <= month[ready_month]:
+        if date_list_int[0] > 9:
+            ready_day = str(date_list_int[0])
+        else:  # добавим 0 в к началу для красоты
+            ready_day = "0" + str(date_list_int[0])
+    else:
+        ready_day = 'err'
+        print('Не верно введён день, он должен быть целвым числом от 1 до 30(31) в формате даты: дд.мм.гггг')
+else:
+    ready_day = '!-->'
+# -------------------------------------year-------------------------------------------------------
+if date_list_int[2] > 1 < 9999:
+    ready_year = str(date_list_int[2])
+    if len(ready_year) != 4:
+        ready_year = 'err'
+        print('Не верно введён день, он должен быть целым числом от 1 до 30(31) в формате даты: дд.мм.гггг')
+else:
+    ready_year = 'err'
+    print('Не верно введён день, он должен быть целым числом от 1 до 30(31) в формате даты: дд.мм.гггг')
+
+
+print(f"Дата правильного вида: {ready_day}.{ready_month}.{ready_year}")
 
 # Задание-3: "Перевёрнутая башня" (Задача олимпиадного уровня)
 #
@@ -64,3 +108,34 @@ date = '-2.10.3001'
 #
 # Вход: 11
 # Выход: 5 3
+
+
+room = 0
+level = 1
+floor = 0
+
+target = int(input("Введите, пожалуйста, номер искомой комнаты 1 ≤ N ≤ 2 000 000 000:"))
+
+if target <= 1 >= 2000000000:
+    print('Неверный номер квартиры, попробуйте ещё раз')
+else:
+    stop = False
+    while not stop:
+        # print("Level", level)
+        for _ in range(level):
+            if not stop:
+                floor += 1
+                # print("floor", floor)
+                doors_left = 0
+                for _ in range(level):
+                    doors_left += 1
+                    room += 1
+                    # print("Room", room)
+                    if room == target:
+                        print(f"Этаж: {doors_left}, Комната {level}-я слева")
+                        stop = True
+                        break
+            else:
+                break
+        level += 1
+
