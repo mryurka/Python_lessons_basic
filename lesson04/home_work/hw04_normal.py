@@ -65,8 +65,9 @@ line_2 = 'mtMmEZUOmcqWiryMQhhTxqKdSTKCYEJlEZCsGAMkgAYEOmHBSQsSUHKvSfbmxULaysm' \
          'JFaXiUWgsKQrDOeZoNlZNRvHnLgCmysUeKnVJXPFIzvdDyleXylnKBfLCjLHntltignbQ' \
          'oiQzTYwZAiRwycdlHfyHNGmkNqSwXUrxGC'
 
-line_2 = "GAMkgAYEOmHBSQsSUHKvSfbmxULaysmNOGIPHpEMujalpPLNzRWXfwHQqwksrFeipEUlTLec"
+# line_2 = "GAMkgAYEOmHBSQsSUHKvSfbmxULaysmNOGIPHpEMujalpPLNzRWXfwHQqwksrFeipEUlTLec"
 print(' ==== Задание-2 без использования "re" ==== ')
+line_tmp = ""
 lst_low = []
 lst_up = []
 low = ""
@@ -82,8 +83,22 @@ for letter in line_2:
             start = low + line_2
             lst_low.append(low)
         low = ""
+for item in line_2:
+    if item.islower():
+        line_tmp += ' '
+    else:
+        line_tmp += item
+list_tmp = line_tmp.split('  ')
+res_list = []
+for item in list_tmp:
+    if ' ' in item:
+        item = item.split()[0]
+    if len(item) < 3:
+        continue
+    else:
+        res_list.append(item[:-2])
+print(res_list)
 
-print(lst_low)
 for letter in line_2:
     if letter.isupper():
         up += letter
@@ -91,7 +106,7 @@ for letter in line_2:
         if len(up) > 2 and line_2.find(up)-2 > 0 and line_2[line_2.find(up)-1].islower() and line_2[line_2.find(up)-2].islower():
             lst_up.append(up[-2:])
         up = ""
-print(lst_up)
+
 head = 0
 tail = 0
 result = []
@@ -103,7 +118,6 @@ for item in lst_low:
     else:
         lst_low.remove(item)
 
-print("lst_low cut", lst_low)
 while True:
     try:
         #print(line_2.find(lst_low[head]))
@@ -115,7 +129,7 @@ while True:
     else:
         head += 1
         tail += 1
-print(result)
+# print(result)
 
 print(' ===== Задание-2 с использованием "re" ===== ')
 lst2_re_final = []
