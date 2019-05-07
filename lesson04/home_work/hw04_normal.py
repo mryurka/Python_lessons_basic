@@ -68,21 +68,6 @@ line_2 = 'mtMmEZUOmcqWiryMQhhTxqKdSTKCYEJlEZCsGAMkgAYEOmHBSQsSUHKvSfbmxULaysm' \
 # line_2 = "GAMkgAYEOmHBSQsSUHKvSfbmxULaysmNOGIPHpEMujalpPLNzRWXfwHQqwksrFeipEUlTLec"
 print(' ==== Задание-2 без использования "re" ==== ')
 line_tmp = ""
-lst_low = []
-lst_up = []
-low = ""
-up = ""
-start = ""
-for letter in line_2:
-    if letter.islower():
-        low += letter
-    else:
-        if len(low) >= 2:
-            low = low[-2:]
-
-            start = low + line_2
-            lst_low.append(low)
-        low = ""
 for item in line_2:
     if item.islower():
         line_tmp += ' '
@@ -99,38 +84,6 @@ for item in list_tmp:
         res_list.append(item[:-2])
 print(res_list)
 
-for letter in line_2:
-    if letter.isupper():
-        up += letter
-    else:
-        if len(up) > 2 and line_2.find(up)-2 > 0 and line_2[line_2.find(up)-1].islower() and line_2[line_2.find(up)-2].islower():
-            lst_up.append(up[-2:])
-        up = ""
-
-head = 0
-tail = 0
-result = []
-
-for item in lst_low:
-    pos = line_2.find(item)
-    if line_2[pos+2].isupper() and line_2[pos+3].isupper() and line_2[pos+4].isupper():
-        continue
-    else:
-        lst_low.remove(item)
-
-while True:
-    try:
-        #print(line_2.find(lst_low[head]))
-        #print(line_2.find(lst_up[tail]))
-        data = line_2[line_2.find(lst_low[head])+2:line_2.find(lst_up[tail])]
-        result.append(data)
-    except IndexError:
-        break
-    else:
-        head += 1
-        tail += 1
-# print(result)
-
 print(' ===== Задание-2 с использованием "re" ===== ')
 lst2_re_final = []
 lst2_re = re.findall(r'[a-z]{2}([A-Z]+)[A-Z]{2}', line_2)
@@ -143,16 +96,31 @@ print("-"*50)
 # 2500-значное произвольное число.
 # Найдите и выведите самую длинную последовательность одинаковых цифр
 # в вышезаполненном файле.
+print(' ==== Задание-3 ==== ')
 n = 0
+longest = ""
+longest_list = []
+equal_list = []
 with open('temp_py.txt', 'w') as my_file:
     while n < 2500:
-
         my_file.write(str(random.randint(1, 9)))
-
         n += 1
 
 with open('temp_py.txt', 'r') as my_file:
     s = my_file.read()
-    print(len(s))
+    print("Длина файла -->", len(s))
+    for num in range(1, 10):
+        tmp_list = re.findall(r'{}+'.format(num), s)
+        if len(longest) < len(max(tmp_list)):
+            longest = max(tmp_list)
+        elif len(longest) == len(max(tmp_list)):
+            equal_list.append(max(tmp_list))
+    for item in equal_list:
+        if len(item) == len(longest):
+            longest_list.append(item)
+    longest_list.append(longest)
+    longest_list.sort()
+    print(f"Наибольшая длина последолвательности --> {len(longest)} симв., --> {longest_list}")
+
 
 
