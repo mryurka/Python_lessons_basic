@@ -19,6 +19,7 @@ import shutil
 
 from hw05_easy import disp_folder
 from hw05_easy import mk_folder
+from hw05_easy import rm_folder
 
 
 def game_over():  # command 0
@@ -45,10 +46,8 @@ def remove():  # command 3
     confirmation = input(f'Вы уверены что хотите удалить папку {del_dir_name} включая все вложенные папки и файлы? \
 Выберите Y если ДА или N если нет и нажмите "Enter" :')
     if confirmation == 'Y' or confirmation == 'y':
-        try:
-            shutil.rmtree(os.path.join(work_dir, del_dir_name))
-        except FileNotFoundError:
-            print("Ошибка удаления такого каталога не существует, попробуйте ещё раз")
+        print(rm_folder(os.path.join(work_dir, del_dir_name)))
+        #    print("Ошибка удаления такого каталога не существует, попробуйте ещё раз")
     else:
         print('Удаление не подтверждено, для подтверждения нужно выбрать "Y"')
 

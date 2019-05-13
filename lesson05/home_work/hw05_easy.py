@@ -17,6 +17,16 @@ def mk_folder(folder=os.getcwd(), dir_name="new_dir"):
         return "Создана папка -->", os.path.abspath(dir_name)
 
 
+def rm_folder(del_dir_name, folder=os.getcwd()):
+    full_name = os.path.join(folder, del_dir_name)
+    try:
+        shutil.rmtree(full_name)
+    except FileNotFoundError:
+        return "Ошибка удаления такого каталога не существует"
+    else:
+        return f"Папка {del_dir_name} - удалена"
+
+
 # Задача-2:
 # Напишите скрипт, отображающий папки текущей директории.
 def disp_folder(folder=os.getcwd()):
@@ -47,6 +57,12 @@ if __name__ == '__main__':
     for index in range(1, 10):
         my_name = 'dir_' + str(index)
         print(mk_folder(dir_name=my_name))
+    npt = input('\nУдалить ранее созданые папки? Y or N затем  "Enter"')
+    if npt == 'Y' or npt == 'y':
+        for index in range(1, 10):
+            my_name = 'dir_' + str(index)
+            print(rm_folder(del_dir_name=my_name))
+
     print("-" * 50)
     print("--- Задача-2 ---")
     disp_folder()
