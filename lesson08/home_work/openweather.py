@@ -123,3 +123,173 @@ OpenWeatherMap — онлайн-сервис, который предостав�
 
 """
 
+import urllib.request
+import urllib.error
+import os
+import gzip
+import json
+import sqlite3
+import datetime
+
+
+def downloader(url="http://bulk.openweathermap.org/sample/city.list.json.gz"):
+    try:
+        print(f"Receiving file from url")
+        response = urllib.request.urlretrieve(url, "city.list.json.gz")
+    except urllib.error.HTTPError:
+        return False
+    else:
+        return response[1]
+
+
+def unpacker(full_path=(os.getcwd() + os.sep + "city.list.json.gz")):
+    try:
+        f_name = full_path[:-3]
+        with open(f_name, "wb") as output:
+            with gzip.GzipFile(full_path, "rb") as arc:
+                output.write(arc.read())
+    except:
+        return False
+    else:
+        return True
+
+
+def get_country_list(disp=False):
+    with open("city.list.json", "r", encoding='utf-8') as js_file:
+        country_list = [item['country'] for item in json.load(js_file) if item['country']]
+        unique_country_list = list(set(country_list))  # прогон через множество для удаления дублей
+        enumerate_country_list = list(enumerate(sorted(unique_country_list), 1))  # сортровка и нумерация
+        enumerate_country_dict = {item[0]: item[1] for item in enumerate_country_list}  # со словариком удобнее
+        if disp:
+            for item in enumerate_country_list:
+                print(f"Код страны {item[1]}, номер: {item[0]}")
+        return enumerate_country_dict
+
+
+def get_city_id(country_code="ru"):
+    cc = country_code.upper()  # код страны
+    with open("city.list.json", "r", encoding='utf-8') as js_file:
+        lst = [item for item in json.load(js_file) if item['country'] == cc]
+        return lst
+
+
+def requester(city_code):
+    app_id = r'6b26813e256d78f04d5913b5c1fe938d'
+    head = r"https://api.openweathermap.org/data/2.5/group?"
+    param = f"id={city_code}&units=metric&appid={app_id}"
+    try:
+        url = head + param
+        response = urllib.request.urlopen(url)
+    except urllib.error.HTTPError:
+        ret = False
+    else:
+        lst = json.loads(response.read())
+        ret = lst['list']
+    return ret
+
+
+def db(c_id, c_name, t, w_id):
+    d_today = datetime.date.today().strftime('%Y-%m-%d')
+    if not os.path.exists('my_weather.db'):
+        try:
+            db_con = sqlite3.connect("my_weather.db")
+            cursor = db_con.cursor()
+            cursor.execute("""CREATE TABLE weather
+                              (id INTEGER, city_id INTEGER, city VARCHAR (255), date DATE,
+                               temperature INTEGER, weather_id INTEGER, PRIMARY KEY (id, city_id))
+                           """)
+        except sqlite3.Error:
+            return False
+    try:
+        db_con = sqlite3.connect("my_weather.db")
+        cursor = db_con.cursor()
+        cursor.execute(f"""INSERT INTO weather
+                       VALUES ((SELECT IFNULL(MAX(id), 0) + 1 FROM weather), {c_id}, '{c_name}', '{d_today}', {t}, {w_id})""")
+        db_con.commit()
+    except sqlite3.Error:
+        ret = False
+    else:
+        ret = True
+    return ret
+
+
+if __name__ == "__main__":
+    if not os.path.exists('city.list.json'):
+        download = downloader()
+        if download:
+            unpack = unpacker()
+            if not unpack:
+                print('Ощибка распаковки файла со списском городов')
+                print("Программа завершена.")
+                exit()
+        else:
+            print('Ощибка скачивания файла со списском городов')
+            print("Программа завершена.")
+            exit()
+
+    city_list_dic = get_country_list(disp=True)
+    c_code_input = input('Введите номер страны для запроса погоды или "0" для выхода: ')
+    items = []
+    try:
+        c_code_num = int(c_code_input)
+        if c_code_num == 0:
+            print('Всего доброго!')
+            exit()
+    except ValueError:
+        print("Ошибка ввода, номер страны введён некоректно")
+        print("Программа завершена.")
+        exit()
+    else:
+        try:
+            items = get_city_id(city_list_dic[c_code_num])
+        except KeyError:
+            print("Ошибка ввода, страны с таким номером не существует")
+            print("Программа завершена.")
+            exit()
+        else:
+            small_items = [(item['name'], item['id']) for item in items]
+            sorted_items = sorted(small_items)
+            printed, pause = 0, 35
+            for item in sorted_items:
+                print(f"Город: {item[0]}, номер: {item[1]}")
+                printed += 1
+                if printed == pause:
+                    pause += 35
+                    i = input('"Enter" следующая страница "S" прекратить вывод городов: ')
+                    if i.upper() == 'S':
+                        break
+
+    id_code_input = input('Введите код города для запроса погоды или "0" для выхода: ')
+    try:
+        id_code_num = int(id_code_input)
+        if id_code_num == 0:
+            print('Всего доброго!')
+            exit()
+    except ValueError:
+        print("Ошибка ввода, код корода введён некоректно")
+        print("Программа завершена.")
+        exit()
+    else:
+        test_list = [item["id"] for item in items]
+        if id_code_num in test_list:
+            print(f"ОК, код города найден в списке горов!")
+            request = requester(id_code_num)
+            if not request:
+                print(f"Sorry, Код города НЕ найден! Скорее всего он введён не корректно, попробуйте Ctrl+c -> Ctrl+v")
+                print("Программа завершена.")
+                exit()
+            print("Запрос к сервису выполнен")
+            city_id = request[0]['id']
+            city = request[0]['name']
+            temp = request[0]['main']['temp']
+            weather_id = request[0]['weather'][0]['id']
+            # weather_id = request[0]['sys']['id']
+            print(f"id Города: {city_id}, Город: {city}, Температура: {temp}")
+            db_result = db(city_id, city, temp, weather_id)
+            if db_result:
+                print("Погода сохранена в БД.")
+                print("Программа завершена.")
+        else:
+            print("Sorry, Код города НЕ найден! Скорее всего он введён не корректно, попробуйте Ctrl+c -> Ctrl+v")
+            print("Программа завершена.")
+
